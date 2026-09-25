@@ -1,0 +1,8 @@
+site_name: "Vast SQL Output Port Template"
+site_description: "Create an Output Port backed by a table on the VAST Data platform"
+
+nav:
+  - Template Usage: index.md
+
+plugins:
+  - techdocs-core

@@ -1,0 +1,169 @@
+apiVersion: witboost.com/v2
+kind: EditTemplate
+metadata:
+  name: edit-vast-sql-outputport-template-1
+  title: Edit Output Port Vast SQL Template
+  description: Edit a Vast SQL Output Port created with the Output Port Vast SQL Template
+  mesh:
+    icon: https://cdn.dribbble.com/userupload/42159523/file/original-494d5b87b45485a2a7c05d0bd12c080f.gif
+  tags:
+    - vast
+    - sql
+    - output-port
+    - edit
+
+spec:
+  owner: agilelab
+  useCaseTemplateId:
+    - urn:dmb:utm:vast-sql-outputport-template:0.0.0
+
+  parameters:
+    - title: Edit Vast SQL Output Port
+      description: |
+        This wizard allows you to edit metadata and configuration for your Vast SQL Output Port.
+
+        **Not editable:** Name, Domain, Data Product, Identifier, physical deployment location
+        (Database, Schema, Table, Path, Policy, Bucket, Vip Pool) and Schema Columns.
+
+        **Files requiring manual update:** README.md, CI/CD configuration.
+
+    - title: Update metadata
+      required:
+        - description
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Not editable after creation.
+          ui:field: EntityNamePicker
+          ui:disabled: true
+          ui:options:
+            allowArbitraryValues: true
+        fullyQualifiedName:
+          title: Fully Qualified Name
+          type: string
+          description: Output port fully qualified name
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this output port is for
+          minLength: 1
+        domain:
+          title: Domain
+          type: string
+          description: Not editable after creation.
+          ui:field: EntityPicker
+          ui:disabled: true
+          ui:options:
+            allowArbitraryValues: false
+            allowedKinds:
+              - Domain
+        dataproduct:
+          title: Data Product
+          type: string
+          description: Not editable after creation.
+          ui:field: EntityPicker
+          ui:disabled: true
+          ui:filter:
+            - fieldName: domain
+              entityPath: spec.domain
+          ui:options:
+            allowArbitraryValues: false
+            allowedKinds:
+              - System
+        identifier:
+          title: Identifier
+          type: string
+          description: Not editable after creation.
+          ui:disabled: true
+        owner:
+          title: Component Owner
+          type: string
+          description: Automatically selected from the Data Product metadata
+          ui:field: EntitySelectionPicker
+          ui:fieldName: dataproduct
+          ui:property: spec.owner
+          ui:options:
+            allowArbitraryValues: false
+        dependsOn:
+          title: Depends on
+          type: array
+          default: []
+          items:
+            type: string
+            ui:field: EntityRelationsPicker
+            ui:fieldName: dataproduct
+            ui:options:
+              allowArbitraryValues: false
+          description: An Output Port could depend on other output ports or storage areas
+
+    - title: Provide some additional information
+      properties:
+        processDescription:
+          title: Process Description
+          type: string
+          description: what is the underlying process that contributes to generate the
+            data exposed by this output port
+        intervalOfChange:
+          title: Interval of change
+          type: string
+          description: how often changes in the data are reflected
+        timeliness:
+          title: Timeliness
+          type: string
+          description: the skew between the time that a business fact occurs and when it
+            becomes visible in the data
+        upTime:
+          title: Up time
+          type: string
+          description: the percentage of port availability
+        termsAndConditions:
+          title: Terms and conditions
+          type: string
+          description: If the data is usable only in specific environments
+        endpoint:
+          title: Endpoint
+          type: string
+          description: this is the API endpoint that self-describe the output port and
+            provide insightful information at runtime about the physical
+            location of the data, the protocol must be used, etc.
+
+    - title: Data sharing agreements information
+      properties:
+        purpose:
+          title: Purpose
+          type: string
+          description: what is the goal of this data set
+        billing:
+          title: Billing
+          type: string
+          description: how a consumer will be charged back when it consumes this output port
+        security:
+          title: Security
+          type: string
+          description: additional information related to security aspects, like
+            restrictions, maskings, sensible information and privacy
+        intendedUsage:
+          title: IntendedUsage
+          type: string
+          description: any other information needed by the consumer in order to
+            effectively consume the data, it could be related to technical stuff
+            (e.g. extract no more than one year of data for good performances)
+            or to business domains (e.g. this data is only useful in the
+            marketing domains)
+        limitations:
+          title: Limitations
+          type: string
+          description: If any limitation is present it must be made super clear to the
+            consumers
+        lifeCycle:
+          title: LifeCycle
+          type: string
+          description: Describe how the data will be historicized and how and when it will
+            be deleted
+        confidentiality:
+          title: Confidentiality
+          type: string
+          description: Describe what a consumer should do to keep the information
+            confidential, how to process and store it. Permission to share or
+            report it

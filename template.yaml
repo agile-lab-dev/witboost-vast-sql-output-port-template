@@ -1,0 +1,322 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: vast-sql-outputport-template-1
+  title: Output Port Vast SQL Template
+  description: Repository containing the definition of a Vast SQL Output Port
+  mesh:
+    icon: https://cdn.dribbble.com/userupload/42159523/file/original-494d5b87b45485a2a7c05d0bd12c080f.gif
+  tags:
+    - vast
+    - sql
+    - output-port
+spec:
+  generates: componenttype:default/outputport
+  owner: agilelab
+  type: outputport
+  parameters:
+    - title: Basic component information
+      required:
+        - name
+        - domain
+        - dataproduct
+        - description
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Required name used for display purposes
+          ui:field: EntityNamePicker
+          default: SQL Vast Output Port
+          ui:options:
+            allowArbitraryValues: true
+        fullyQualifiedName:
+          title: Fully Qualified Name
+          type: string
+          description: Output port fully qualified name
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this output port is for
+        domain:
+          title: Domain
+          type: string
+          description: Domain of the Data Product this output port belongs to
+          ui:field: EntityPicker
+          ui:options:
+            allowArbitraryValues: false
+            allowedKinds:
+              - Domain
+        dataproduct:
+          title: Data Product
+          type: string
+          description: Data Product this output port belongs to
+          ui:field: EntityPicker
+          ui:filter:
+            - fieldName: domain
+              entityPath: spec.domain
+          ui:options:
+            allowArbitraryValues: false
+            allowedKinds:
+              - System
+        identifier:
+          title: Identifier
+          type: string
+          description: A unique identifier for the entity inside the domain. It will not
+            be editable aftrer creation and is expected to be a string that is
+            sequences of [a-zA-Z] separated by any of [-_]. An example could be
+            'finance-customer'.
+          ui:field: ComponentIdentifierPicker
+          ui:options:
+            allowArbitraryValues: false
+        owner:
+          title: Data Product Owner
+          type: string
+          description: Automatically selected from the Data Product metadata
+          ui:field: EntitySelectionPicker
+          ui:fieldName: dataproduct
+          ui:property: spec.owner
+          ui:options:
+            allowArbitraryValues: false
+        dependsOn:
+          title: Depends on
+          type: array
+          default: []
+          items:
+            type: string
+            ui:field: EntityRelationsPicker
+            ui:fieldName: dataproduct
+            ui:options:
+              allowArbitraryValues: false
+          description: An Output Port could depend on other output ports or storage areas
+
+    - title: Data contract schema
+      description: |-
+        Define the schema of the Output Port view. Primitive data types supported.
+        
+        The **Data Contract** schema specifies the structure of the data that will be exposed through the Output Port.  
+        
+        This schema will be used by the Output Port to create a Vast database table with the exact columns defined in this schema.
+
+        The Data Contract ensures consistency and enforces a predefined structure.
+      properties:
+        schemaColumns:
+          title: Schema Columns
+          type: array
+          ui:ArrayFieldTemplate: ArrayTableTemplate
+          items:
+            type: object
+            ui:ObjectFieldTemplate: TableRowTemplate
+            required: [ name, dataType ]
+            properties:
+              name:
+                type: string
+                title: Column Name
+                pattern: "^[a-zA-Z_][a-zA-Z0-9_]*$"
+                minLength: 1
+              description:
+                type: string
+                title: Description
+              dataType:
+                type: string
+                default: INT
+                title: Column Data Type
+                enum:
+                  - TINYINT
+                  - SMALLINT
+                  - INT
+                  - BIGINT
+                  - DOUBLE
+                  - DECIMAL
+                  - TIMESTAMP
+                  - DATE
+                  - STRING
+                  - CHAR
+                  - VARCHAR
+                  - BOOLEAN
+                  - ARRAY
+            allOf:
+              - if:
+                  properties:
+                    dataType:
+                      oneOf:
+                        - const: VARCHAR
+                        - const: CHAR
+                then:
+                  properties:
+                    dataLength:
+                      title: Column Length
+                      type: integer
+                      description: Maximum length of column row
+                  required:
+                    - dataLength
+              - if:
+                  properties:
+                    dataType:
+                      oneOf:
+                        - const: DECIMAL
+                then:
+                  properties:
+                    dataTypeDisplay:
+                      title: Data Type Display
+                      type: string
+                      description: Representation of data type (e.g. `decimal(9,0)` )
+              - if:
+                  properties:
+                    dataType:
+                      const: ARRAY
+                then:
+                  required:
+                    - arrayDataType
+                  properties:
+                    arrayDataType:
+                      title: Array Data Type
+                      description: Data type of the array elements
+                      type: string
+                      default: INT
+                      enum:
+                        - TINYINT
+                        - SMALLINT
+                        - INT
+                        - BIGINT
+                        - DOUBLE
+                        - DECIMAL
+                        - TIMESTAMP
+                        - DATE
+                        - STRING
+                        - CHAR
+                        - VARCHAR
+                        - BOOLEAN
+                        - ARRAY
+                  allOf:
+                    - if:
+                        properties:
+                          arrayDataType:
+                            oneOf:
+                              - const: VARCHAR
+                              - const: CHAR
+                      then:
+                        properties:
+                          dataLength:
+                            title: Column Length
+                            type: integer
+                            description: Maximum length of column row
+                        required:
+                          - dataLength
+                    - if:
+                        properties:
+                          arrayDataType:
+                            oneOf:
+                              - const: DECIMAL
+                      then:
+                        properties:
+                          dataTypeDisplay:
+                            title: Data Type Display
+                            type: string
+                            description: Representation of data type (e.g. `decimal(9,0)` )
+
+    - title: Provide Output port deployment information
+      description: |-
+        Physical location of the Vast SQL table backing this Output Port.
+        Additional descriptive metadata (process description, SLA, data sharing agreements) can be filled in later using the edit wizard.
+      required:
+        - database_name
+        - schema_name
+        - table_name
+        - path
+        - policy_name
+        - bucket_name
+        - vip_pool
+      properties:
+        database_name:
+          title: Database Name
+          type: string
+          description: Name of the sql Database.
+        schema_name:
+          title: Schema Name
+          type: string
+          description: Name of the sql Schema.
+        table_name:
+          title: Table Name
+          type: string
+          description: Name of the sql Table.
+        path:
+          title: S3 Path
+          type: string
+          description: Name of the S3 Path.
+        policy_name:
+          title: Policy Name
+          type: string
+          description: Name of the view policy to be used for the Vast view.
+        bucket_name:
+          title: Bucket Name
+          type: string
+          description: Name of the Vast S3 Bucket
+          pattern: "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+          minLength: 3
+          maxLength: 63
+        vip_pool:
+          title: Vip Pool
+          type: string
+          description: Name of the Vast Vip Pool
+  steps:
+    - id: template
+      name: Fetch Skeleton + Template
+      action: fetch:template
+      input:
+        url: ./skeleton
+        targetPath: ${{ parameters.rootDirectory }}
+        values:
+          name: ${{ parameters.name }}
+          fullyQualifiedName: ${{ parameters.fullyQualifiedName }}
+          description: ${{ parameters.description }}
+          domain: ${{ parameters.domain }}
+          dataproduct: ${{ parameters.dataproduct }}
+          identifier: ${{ parameters.identifier }}
+          owner: ${{ parameters.owner }}
+          dependsOn: ${{ parameters.dependsOn }}
+          schemaColumns: '${{ parameters.schemaColumns }}'
+          purpose: ""
+          billing: ""
+          security: ""
+          intendedUsage: ""
+          limitations: ""
+          lifeCycle: ""
+          confidentiality: ""
+          database_name: ${{ parameters.database_name }}
+          schema_name: ${{ parameters.schema_name }}
+          table_name: ${{ parameters.table_name }}
+          path: ${{  parameters.path }}
+          policy_name: ${{ parameters.policy_name }}
+          bucket_name: ${{ parameters.bucket_name }}
+          vip_pool: ${{ parameters.vip_pool }}
+          creationDate: ${{ parameters.creationDate }}
+          useCaseTemplateId: urn:dmb:utm:vast-sql-outputport-template:0.0.0
+          infrastructureTemplateId: urn:dmb:itm:vast-sql-outputport-provisioner:0
+          repoGroup: your-gitlab-group/vast/${{ parameters.domain | replace(r/domain:| |-/, "") }}/${{ parameters.name.split(" ") | join("") | lower }}
+          repoName: DataProduct.${{ parameters.name.split(" ") | join("") | lower }}
+          useCaseTemplateVersion: 0.0.0
+    - id: publish
+      name: Publish
+      action: witboostMeshComponent:publish:gitlab
+      input:
+        allowedHosts:
+          - gitlab.com
+        description: This is ${{ parameters.name }}
+        # TODO: replace "your-gitlab-group" with the actual top-level GitLab group that will own component repositories before publishing this template.
+        repoUrl: gitlab.com?owner=your-gitlab-group%2Fvast%2F${{parameters.domain | replace(r/domain:| |-/, "") }}%2F${{parameters.name.split(" ") | join("") | lower }}&repo=DataProduct.${{parameters.name.split(" ") | join("") | lower }}
+        rootDirectory: .
+        dataproduct: ${{ parameters.dataproduct }}
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /${{ parameters.rootDirectory }}catalog-info.yaml
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open Component
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

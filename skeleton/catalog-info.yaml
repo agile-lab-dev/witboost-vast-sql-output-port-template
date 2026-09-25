@@ -1,0 +1,79 @@
+%SKELETON
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.identifier }}
+  description: ${{ values.description | dump }}
+  annotations:
+    gitlab.com/project-slug: ${{ values.repoGroup + "/" + values.repoName }}
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - outputport
+    - vast
+    - sql
+spec:
+  type: outputport
+  lifecycle: experimental
+  owner: ${{ values.owner | dump }}
+  system: ${{ values.dataproduct | dump }}
+  domain: ${{ values.domain | dump }}
+  mesh:
+    name: ${{ values.name | dump }}
+    fullyQualifiedName: ${{ values.fullyQualifiedName | dump}}
+    description: ${{ values.description | dump}}
+    kind: outputport
+    version: ${{ values.identifier.split(".")[2] + ".0.0" }}
+    infrastructureTemplateId: ${{ values.infrastructureTemplateId }}
+    useCaseTemplateId: ${{ values.useCaseTemplateId }}
+    dependsOn:
+    {%- if values.dependsOn and values.dependsOn | length > 0 -%}
+      {%- for i in values.dependsOn %}
+      - ${{ i }}
+      {%- endfor -%}
+    {%- else %} []
+    {%- endif %}
+    platform: Vast Data
+    technology: table
+    outputPortType: Files
+    creationDate: ${{ values.creationDate }}
+    startDate: ${{ values.creationDate }}
+    processDescription: ${{ values.processDescription | dump }}
+    dataContract:
+      schema: {% if values.schemaColumns | length > 0 %}{% for column in values.schemaColumns %}
+        - name: ${{ column.name }}
+          dataType: ${{ column.dataType }}
+          description: ${{ column.description }}
+        {% if column.dataLength %}
+          dataLength: ${{ column.dataLength }}
+        {% endif %}
+        {% if column.dataTypeDisplay %}
+          dataTypeDisplay: ${{ column.dataTypeDisplay }}
+        {% endif %}
+        {% if column.arrayDataType %}
+          arrayDataType: ${{ column.arrayDataType }}
+        {% endif %}{% endfor %}{% else %}[]{% endif %}
+      termsAndConditions: ${{ values.termsAndConditions | dump }}
+      endpoint: ${{ values.endpoint | dump }}
+      SLA:
+        intervalOfChange: ${{ values.intervalOfChange | dump }}
+        timeliness: ${{ values.timeliness | dump }}
+        upTime: ${{ values.upTime | dump }}
+    dataSharingAgreements:
+      purpose: ${{ values.purpose | dump }}
+      billing: ${{ values.billing | dump }}
+      security: ${{ values.security | dump }}
+      intendedUsage: ${{ values.intendedUsage | dump }}
+      limitations: ${{ values.limitations | dump }}
+      lifeCycle: ${{ values.lifeCycle | dump }}
+      confidentiality: ${{ values.confidentiality | dump }}
+    tags: []
+    sampleData: {}
+    semanticLinking: []
+    specific:
+      database_name: ${{ values.database_name }}
+      schema_name: ${{ values.schema_name }}
+      table_name: ${{ values.table_name }}
+      path: ${{ values.path }}
+      policy_name: ${{ values.policy_name }}
+      bucket_name: ${{ values.bucket_name }}
+      vip_pool: ${{ values.vip_pool }}
