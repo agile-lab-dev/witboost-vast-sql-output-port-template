@@ -63,7 +63,7 @@ spec:
           title: Identifier
           type: string
           description: A unique identifier for the entity inside the domain. It will not
-            be editable aftrer creation and is expected to be a string that is
+            be editable after creation and is expected to be a string that is
             sequences of [a-zA-Z] separated by any of [-_]. An example could be
             'finance-customer'.
           ui:field: ComponentIdentifierPicker
