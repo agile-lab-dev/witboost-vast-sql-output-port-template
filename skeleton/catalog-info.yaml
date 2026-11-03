@@ -1,9 +1,10 @@
 %SKELETON
+{% set dataProductMajorVersion = parameters.identifier.split(".")[2] %}
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: ${{ values.identifier }}
-  description: ${{ values.description | dump }}
+  description: ${{ parameters.description | dump }}
   annotations:
     gitlab.com/project-slug: ${{ values.repoGroup + "/" + values.repoName }}
     backstage.io/techdocs-ref: dir:.
@@ -14,58 +15,53 @@ metadata:
 spec:
   type: outputport
   lifecycle: experimental
-  owner: ${{ values.owner | dump }}
+  owner: ${{ parameters.owner | dump }}
   system: ${{ values.dataproduct | dump }}
   domain: ${{ values.domain | dump }}
   mesh:
-    name: ${{ values.name | dump }}
-    fullyQualifiedName: ${{ values.fullyQualifiedName | dump}}
-    description: ${{ values.description | dump}}
+    name: ${{ parameters.name | dump }}
+    fullyQualifiedName: ${{ (parameters.domainName + " - " + parameters.dataproductName + " - version " + dataProductMajorVersion + " - " + parameters.name) | dump }}
+    description: ${{ parameters.description | dump }}
     kind: outputport
-    version: ${{ values.identifier.split(".")[2] + ".0.0" }}
+    version: ${{ dataProductMajorVersion + ".0.0" }}
     infrastructureTemplateId: ${{ values.infrastructureTemplateId }}
     useCaseTemplateId: ${{ values.useCaseTemplateId }}
-    dependsOn:
-    {%- if values.dependsOn and values.dependsOn | length > 0 -%}
-      {%- for i in values.dependsOn %}
-      - ${{ i }}
-      {%- endfor -%}
-    {%- else %} []
-    {%- endif %}
+    dependsOn: {% if parameters.dependsOn and parameters.dependsOn | length > 0 %}{% for dependency in parameters.dependsOn %}
+      - ${{ dependency | dump }}{% endfor %}{% else %}[]{% endif %}
     platform: Vast Data
     technology: table
-    outputPortType: Files
-    creationDate: ${{ values.creationDate }}
-    startDate: ${{ values.creationDate }}
-    processDescription: ${{ values.processDescription | dump }}
+    outputPortType: SQL
+    creationDate: ${{ parameters.creationDate }}
+    startDate: ${{ parameters.creationDate }}
+    processDescription: ${{ parameters.processDescription | dump }}
     dataContract:
       schema: {% if values.schemaColumns | length > 0 %}{% for column in values.schemaColumns %}
         - name: ${{ column.name }}
           dataType: ${{ column.dataType }}
-          description: ${{ column.description }}
+          description: ${{ column.description | dump }}
         {% if column.dataLength %}
           dataLength: ${{ column.dataLength }}
         {% endif %}
         {% if column.dataTypeDisplay %}
-          dataTypeDisplay: ${{ column.dataTypeDisplay }}
+          dataTypeDisplay: ${{ column.dataTypeDisplay | dump }}
         {% endif %}
         {% if column.arrayDataType %}
           arrayDataType: ${{ column.arrayDataType }}
         {% endif %}{% endfor %}{% else %}[]{% endif %}
-      termsAndConditions: ${{ values.termsAndConditions | dump }}
-      endpoint: ${{ values.endpoint | dump }}
+      termsAndConditions: ${{ parameters.termsAndConditions | dump }}
+      endpoint: ${{ parameters.endpoint | dump }}
       SLA:
-        intervalOfChange: ${{ values.intervalOfChange | dump }}
-        timeliness: ${{ values.timeliness | dump }}
-        upTime: ${{ values.upTime | dump }}
+        intervalOfChange: ${{ parameters.intervalOfChange | dump }}
+        timeliness: ${{ parameters.timeliness | dump }}
+        upTime: ${{ parameters.upTime | dump }}
     dataSharingAgreements:
-      purpose: ${{ values.purpose | dump }}
-      billing: ${{ values.billing | dump }}
-      security: ${{ values.security | dump }}
-      intendedUsage: ${{ values.intendedUsage | dump }}
-      limitations: ${{ values.limitations | dump }}
-      lifeCycle: ${{ values.lifeCycle | dump }}
-      confidentiality: ${{ values.confidentiality | dump }}
+      purpose: ${{ parameters.purpose | dump }}
+      billing: ${{ parameters.billing | dump }}
+      security: ${{ parameters.security | dump }}
+      intendedUsage: ${{ parameters.intendedUsage | dump }}
+      limitations: ${{ parameters.limitations | dump }}
+      lifeCycle: ${{ parameters.lifeCycle | dump }}
+      confidentiality: ${{ parameters.confidentiality | dump }}
     tags: []
     sampleData: {}
     semanticLinking: []

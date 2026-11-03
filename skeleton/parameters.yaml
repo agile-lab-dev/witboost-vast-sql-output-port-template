@@ -1,0 +1,14 @@
+parameters:
+  processDescription: null
+  intervalOfChange: null
+  timeliness: null
+  upTime: null
+  termsAndConditions: null
+  endpoint: null
+  purpose: null
+  billing: null
+  security: null
+  intendedUsage: null
+  limitations: null
+  lifeCycle: null
+  confidentiality: null

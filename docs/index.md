@@ -1,4 +1,6 @@
-### Prerequisites
+# Vast SQL Output Port Template
+
+## Prerequisites
 
 A Data Product should already exist in order to attach the new component to it.
 
@@ -11,7 +13,7 @@ The Creation Wizard allows you to create a new Vast SQL Output Port.
 This section covers the basic information that any component must have.
 
 - Name: Required. The name of the component.
-- Fully Qualified Name: Fully qualified name of the component.
+- Fully Qualified Name: Generated from the Domain, Data Product, major version, and component name.
 - Description: Required. Help others understand what this output port is for.
 - Domain: Required. Domain of the Data Product this output port belongs to.
 - Data Product: Required. Data Product this output port belongs to.
@@ -26,8 +28,8 @@ Define the schema of the Output Port view. The **Data Contract** schema specifie
 - Column Name: Required. Must be a valid SQL identifier (letters, digits, underscore; cannot start with a digit).
 - Description: Description of the column.
 - Column Data Type: Required. One of `TINYINT`, `SMALLINT`, `INT`, `BIGINT`, `DOUBLE`, `DECIMAL`, `TIMESTAMP`, `DATE`, `STRING`, `CHAR`, `VARCHAR`, `BOOLEAN`, `ARRAY`.
-- Column Length: Required for `VARCHAR`/`CHAR` columns.
-- Data Type Display: Optional representation for `DECIMAL` columns (e.g. `decimal(9,0)`).
+- Column Length: Required for `VARCHAR`/`CHAR` columns and their array element types.
+- Data Type Display: Optional representation for `DECIMAL` columns and `DECIMAL` array elements (e.g. `decimal(9,0)`).
 - Array Data Type: Required when the column data type is `ARRAY`.
 
 #### Provide Output port deployment information
