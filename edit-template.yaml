@@ -22,8 +22,8 @@ spec:
       description: |
         This wizard allows you to edit metadata and configuration for your Vast SQL Output Port.
 
-        **Not editable:** Name, Domain, Data Product, Identifier, physical deployment location
-        (Database, Schema, Table, Path, Policy, Bucket, Vip Pool) and Schema Columns.
+        **Generated or not editable:**  Name, Domain, Data Product, Identifier,
+        physical deployment location (Database, Schema, Table, Path, Policy, Bucket, Vip Pool), and Schema Columns.
 
         **Files requiring manual update:** README.md, CI/CD configuration.
 
@@ -39,10 +39,18 @@ spec:
           ui:disabled: true
           ui:options:
             allowArbitraryValues: true
-        fullyQualifiedName:
-          title: Fully Qualified Name
+        domainName:
+          title: Domain Name
+          description: Read from the selected Domain; used to generate the Fully Qualified Name.
           type: string
-          description: Output port fully qualified name
+          ui:widget: hidden
+          ui:disabled: true
+        dataproductName:
+          title: Data Product Name
+          description: Read from the selected Data Product; used to generate the Fully Qualified Name.
+          type: string
+          ui:widget: hidden
+          ui:disabled: true
         description:
           title: Description
           type: string
